@@ -1,0 +1,18 @@
+Active Record vs Data Mapper: https://github.com/typeorm/typeorm/blob/master/docs/active-record-data-mapper.md
+
+````````````````````````````````````````````````````````````````````````````````````````````````````````
+
+
+docker run --name postgres-nest -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
+
+docker container ls
+
+docker container stop postgres-nest     
+
+docker container start postgres-nest           
+
+````````````````````````````````````````````````````````````````````````````````````````````````````````
+
+https://docs.nestjs.com/techniques/database#repository-pattern
+
+````````````````````````````````````````````````````````````````````````````````````````````````````````
