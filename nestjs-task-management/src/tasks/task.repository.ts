@@ -5,6 +5,7 @@ import { Repository, DeleteResult } from 'typeorm';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from './task-status.enum';
+import { User } from 'src/auth/user.entity';
 @Injectable()
 export class TaskRepository {
   constructor(
@@ -12,37 +13,40 @@ export class TaskRepository {
     private tasksRepository: Repository<Task>,
   ) {}
 
-  async findTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  async findTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
     const { search, status } = filterDto;
     const query = this.tasksRepository.createQueryBuilder('task');
-
+    query.where({ user });
     if (status) {
       query.andWhere('task.status = :status', { status });
     }
 
     if (search) {
       query.andWhere(
-        'LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)',
+        '(LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search))',
         { search: `%${search}%` },
       );
     }
     return await query.getMany();
   }
 
-  async findById(id: string): Promise<Task> {
-    return this.tasksRepository.findOne({ where: { id } });
+  async findById(id: string, user: User): Promise<Task> {
+    return this.tasksRepository.findOne({ where: { id, user } });
   }
 
-  async create(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+    const { title, description } = createTaskDto;
     const task = this.tasksRepository.create({
-      ...createTaskDto,
+      title,
+      description,
       status: TaskStatus.OPEN,
+      user,
     });
     return await this.tasksRepository.save(task);
   }
 
-  async delete(id: string): Promise<DeleteResult> {
-    return await this.tasksRepository.delete(id);
+  async delete(id: string, user: User): Promise<DeleteResult> {
+    return await this.tasksRepository.delete({ id, user });
   }
 
   async save(task: Task): Promise<Task> {
