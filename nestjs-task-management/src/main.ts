@@ -9,7 +9,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
   const port = 8080;
-
   await app.listen(8080);
   logger.log(`application listening on port ${port} `);
 }

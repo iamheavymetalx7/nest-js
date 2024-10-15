@@ -19,11 +19,17 @@ import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
 import { Logger } from '@nestjs/common';
 import { create } from 'domain';
+import { ConfigService } from '@nestjs/config';
 @Controller('tasks')
 @UseGuards(AuthGuard()) //protects the entire route
 export class TasksController {
   private logger = new Logger('tasks-controller');
-  constructor(private tasksService: TasksService) {}
+  constructor(
+    private tasksService: TasksService,
+    private configService: ConfigService,
+  ) {
+    console.log(configService.get('TEST_VALUE'));
+  }
 
   @Get()
   getTasks(
